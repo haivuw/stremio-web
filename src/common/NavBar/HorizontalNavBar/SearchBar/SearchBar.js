@@ -21,6 +21,7 @@ const SearchBar = ({ className, query, active }) => {
         }
     }, [active]);
     const queryInputOnChange = React.useCallback(() => {
+        // todo: if starts with `magnet:?xt=` do Magnet creation, otherwise, LocalSearch
         try {
             createTorrentFromMagnet(searchInputRef.current.value);
             // eslint-disable-next-line no-empty
