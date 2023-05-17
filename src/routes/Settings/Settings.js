@@ -12,6 +12,7 @@ const useProfileSettingsInputs = require('./useProfileSettingsInputs');
 const useStreamingServerSettingsInputs = require('./useStreamingServerSettingsInputs');
 const useDataExport = require('./useDataExport');
 const styles = require('./styles');
+const useMobilePlayerSettingsStore = require('./mobilePlayerSettings');
 
 const GENERAL_SECTION = 'general';
 const PLAYER_SECTION = 'player';
@@ -19,6 +20,7 @@ const STREAMING_SECTION = 'streaming';
 const SHORTCUTS_SECTION = 'shortcuts';
 
 const Settings = () => {
+    const { player, setPlayer } = useMobilePlayerSettingsStore();
     const { t } = useTranslation();
     const { core } = useServices();
     const { routeFocused } = useRouteFocused();
@@ -482,6 +484,23 @@ const Settings = () => {
                                 :
                                 null
                         }
+
+                        <div className={styles['option-container']}>
+                            <div className={styles['option-name-container']}>
+                                <div className={styles['label']}>Mobile player</div>
+                            </div>
+                            <Multiselect
+                                className={classnames(styles['option-input-container'], styles['multiselect-container'])}
+                                tabIndex={-1}
+                                selected={[player]}
+                                onSelect={(e) => setPlayer(e.value)}
+                                options={[
+                                    { label: 'VLC', value: 'vlc' },
+                                    { label: 'Outplayer', value: 'outplayer' },
+                                    { label: 'Infuse', value: 'infuse' },
+                                ]}
+                            />
+                        </div>
                     </div>
                     <div ref={shortcutsSectionRef} className={styles['section-container']}>
                         <div className={styles['section-title']}>{ t('SETTINGS_NAV_SHORTCUTS') }</div>

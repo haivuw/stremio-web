@@ -9,6 +9,7 @@ const StreamPlaceholder = require('./StreamPlaceholder');
 const styles = require('./styles');
 
 const { useStreamingServer } = require('stremio/common');
+const useMobilePlayerSettingsStore = require('../../../Settings/mobilePlayerSettings');
 var Buffer = require('buffer/').Buffer;
 
 /**
@@ -62,7 +63,8 @@ const useIosLinks = (links, app = 'vlc') => {
 };
 
 const Stream = ({ className, addonName, name, description, thumbnail, progress, deepLinks, ...props }) => {
-    const href = useIosLinks(deepLinks);
+    const { player }= useMobilePlayerSettingsStore();
+    const href = useIosLinks(deepLinks, player);
     const renderThumbnailFallback = React.useCallback(() => (
         <Icon className={styles['placeholder-icon']} icon={'ic_broken_link'} />
     ), []);
