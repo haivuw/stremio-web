@@ -20,7 +20,16 @@ var Buffer = require('buffer/').Buffer;
 // pipe. stops if arg is falsy
 const pipe = (...fns) => (x) => fns.reduce((v, f) => v ? f(v) : v, x);
 
-const sanitizeJsonString = (s) => s.match(/\{.*\}/g)?.[0]
+// try catch wrapper to debug edge cases
+const tryCatch = (f) => (...args) => {
+    try {
+        return f(...args);
+    } catch (e) {
+        console.error(e, args);
+    }
+};
+
+const sanitizeJsonString = (s) => s.match(/\{.*\}\}/)?.[0]
     // some edge cases where there are extra "}"s
     .replace(/\}{3,}$/, '}}');
 
@@ -45,8 +54,8 @@ const useIosLinks = (links, app = 'vlc') => {
         decodeURIComponent,
         base64ToString,
         sanitizeJsonString,
-        JSON.parse,
-        getStreamUrl
+        tryCatch(JSON.parse),
+        tryCatch(getStreamUrl)
     )(links.player);
 
     return streamUrl;
