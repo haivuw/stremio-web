@@ -8,16 +8,50 @@ const { Button, Image, PlayIconCircleCentered } = require('stremio/common');
 const StreamPlaceholder = require('./StreamPlaceholder');
 const styles = require('./styles');
 
+const { useStreamingServer } = require('stremio/common');
+var Buffer = require('buffer/').Buffer;
+
+/**
+ * @typedef {Object} Meta - Torrent meta.
+ * @property {string} infoHash - The torrent hash.
+ * @property {number} fileIdx - The file index.
+ */
+
+// pipe. stops if arg is falsy
+const pipe = (...fns) => (x) => fns.reduce((v, f) => v ? f(v) : v, x);
+
+const sanitizeJsonString = (s) => s.match(/\{.*\}/g)?.[0];
+
+const base64ToString = (s) => Buffer.from(s, 'base64').toString();
+
+// if user on iOS, return href that open in apps (VLC, Infuse, etc)
+const useIosLinks = (links, app = 'vlc') => {
+    const server = useStreamingServer();
+
+    const isIOS = /iPad|iPhone/.test(navigator.userAgent) && !window.MSStream;
+    if (!isIOS) return links.player;
+
+    /**
+     * Get the stream URL for the provided meta.
+     * @param {Meta} meta - The meta object.
+     * @returns {string} The stream URL.
+     */
+    const getStreamUrl = (meta) =>
+        `${app}://${new URL(`${meta.infoHash}/${meta.fileIdx}`, server.selected.transportUrl)}`;
+
+    const streamUrl = pipe(
+        decodeURIComponent,
+        base64ToString,
+        sanitizeJsonString,
+        JSON.parse,
+        getStreamUrl
+    )(links.player);
+
+    return streamUrl;
+};
+
 const Stream = ({ className, addonName, name, description, thumbnail, progress, deepLinks, ...props }) => {
-    const href = React.useMemo(() => {
-        return deepLinks ?
-            typeof deepLinks.player === 'string' ?
-                deepLinks.player
-                :
-                null
-            :
-            null;
-    }, [deepLinks]);
+    const href = useIosLinks(deepLinks);
     const renderThumbnailFallback = React.useCallback(() => (
         <Icon className={styles['placeholder-icon']} icon={'ic_broken_link'} />
     ), []);
