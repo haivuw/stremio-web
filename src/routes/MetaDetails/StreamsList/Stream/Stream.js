@@ -20,7 +20,7 @@ var Buffer = require('buffer/').Buffer;
 // pipe. stops if arg is falsy
 const pipe = (...fns) => (x) => fns.reduce((v, f) => v ? f(v) : v, x);
 
-const sanitizeJsonString = (s) => s.match(/\{.*\}/g)?.[0];
+const sanitizeJsonString = (s) => s.match(/^\{.*\}\}$/)?.[0];
 
 const base64ToString = (s) => Buffer.from(s, 'base64').toString();
 
