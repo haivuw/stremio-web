@@ -38,7 +38,11 @@ const MetaItem = React.memo(({ className, type, name, poster, posterShape, playI
         if (event.nativeEvent.selectPrevented) {
             event.preventDefault();
         }
-    }, [props.onClick]);
+
+        window.history.pushState(null, '', deepLinks.metaDetailsVideos);
+
+        window.location.href = href;
+    }, [props.onClick, deepLinks?.metaDetailsVideos]);
     const menuOnClick = React.useCallback((event) => {
         event.nativeEvent.selectPrevented = true;
     }, []);
@@ -63,7 +67,7 @@ const MetaItem = React.memo(({ className, type, name, poster, posterShape, playI
         <Icon className={styles['icon']} icon={'ic_more'} />
     ), []);
     return (
-        <Button title={name} href={href} {...filterInvalidDOMProps(props)} className={classnames(className, styles['meta-item-container'], styles['poster-shape-poster'], styles[`poster-shape-${posterShape}`], { 'active': menuOpen })} onClick={metaItemOnClick}>
+        <Button title={name} {...filterInvalidDOMProps(props)} className={classnames(className, styles['meta-item-container'], styles['poster-shape-poster'], styles[`poster-shape-${posterShape}`], { 'active': menuOpen })} onClick={metaItemOnClick}>
             <div className={styles['poster-container']}>
                 <div className={styles['poster-image-layer']}>
                     <Image
